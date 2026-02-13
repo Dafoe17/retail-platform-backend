@@ -1,6 +1,8 @@
 """Application configuration"""
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
 from functools import lru_cache
+from typing import Union, List
 
 
 class Settings(BaseSettings):
@@ -21,11 +23,23 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # CORS
-    CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:8000"]
+    CORS_ORIGINS: Union[str, List[str]] = ["http://localhost:3000", "http://localhost:8000"]
 
     # Pagination
     DEFAULT_PAGE_SIZE: int = 20
     MAX_PAGE_SIZE: int = 100
+
+    @field_validator('CORS_ORIGINS', mode='before')
+    @classmethod
+    def parse_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+        """Parse CORS_ORIGINS from string to list"""
+        if isinstance(v, str):
+            # Allow all origins
+            if v.strip() == "*":
+                return ["*"]
+            # Split by comma
+            return [origin.strip() for origin in v.split(",")]
+        return v
 
     model_config = SettingsConfigDict(
         env_file=".env",
