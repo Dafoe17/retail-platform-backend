@@ -53,10 +53,10 @@ async def list_products(
             name="iPhone 15 Pro",
             slug="iphone-15-pro",
             description="Флагманский смартфон Apple",
-            price=Decimal("99999.00"),
+            price=Decimal("99999.00"),  # В копейках для БД (999.99 руб)
             stock=50,
             category_id=1,
-            images=["https://example.com/iphone.jpg"],
+            images=["https://images.unsplash.com/photo-1592750475338-74b7b210f4f7?w=400"],
             is_available=True,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
@@ -66,10 +66,62 @@ async def list_products(
             name="Samsung Galaxy S24",
             slug="samsung-galaxy-s24",
             description="Флагманский смартфон Samsung",
-            price=Decimal("89999.00"),
+            price=Decimal("89999.00"),  # В копейках для БД (899.99 руб)
             stock=30,
             category_id=1,
-            images=["https://example.com/samsung.jpg"],
+            images=["https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400"],
+            is_available=True,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        ),
+        ProductSchema(
+            id=3,
+            name="MacBook Air 13 M3",
+            slug="macbook-air-13-m3",
+            description="Облегченный ноутбук Apple с процессором M3, 8 ГБ RAM и 256 ГБ SSD.",
+            price=Decimal("129999.00"),  # В копейках для БД (1299.99 руб)
+            stock=20,
+            category_id=1,
+            images=["https://images.unsplash.com/photo-1517336714731-489679fd1ca8?w=400"],
+            is_available=True,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        ),
+        ProductSchema(
+            id=4,
+            name="Беспроводные наушники Sony",
+            slug="sony-headphones",
+            description="Беспроводные наушники с шумоподавлением и 30 часами работы.",
+            price=Decimal("24999.00"),  # В копейках для БД (249.99 руб)
+            stock=45,
+            category_id=1,
+            images=["https://images.unsplash.com/photo-1505740422586-c331084f1cc?w=400"],
+            is_available=True,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        ),
+        ProductSchema(
+            id=5,
+            name="Умные часы Apple Watch Series 9",
+            slug="apple-watch-s9",
+            description="Умные часы с GPS, LTE и датчиком ЭКГ.",
+            price=Decimal("44999.00"),  # В копейках для БД (449.99 руб)
+            stock=25,
+            category_id=1,
+            images=["https://images.unsplash.com/photo-15795860220-c9f22d2ef01?w=400"],
+            is_available=True,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        ),
+        ProductSchema(
+            id=6,
+            name="iPad Pro 12.9\"",
+            slug="ipad-pro-129",
+            description="Планшет Apple с дисплеем Liquid Retina и чипом M2.",
+            price=Decimal("99999.00"),  # В копейках для БД (999.99 руб)
+            stock=15,
+            category_id=1,
+            images=["https://images.unsplash.com/photo-1544244015-4df4352d93f5?w=400"],
             is_available=True,
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow()
@@ -211,6 +263,51 @@ async def list_categories(
             name="Электроника",
             slug="electronics",
             description="Электронные устройства и гаджеты",
+            parent_id=None,
+            is_active=True,
+            created_at=datetime.utcnow()
+        ),
+        CategorySchema(
+            id=2,
+            name="Одежда",
+            slug="clothing",
+            description="Одежда для мужчин и женщин",
+            parent_id=None,
+            is_active=True,
+            created_at=datetime.utcnow()
+        ),
+        CategorySchema(
+            id=3,
+            name="Бытовая техника",
+            slug="appliances",
+            description="Техника для дома",
+            parent_id=None,
+            is_active=True,
+            created_at=datetime.utcnow()
+        ),
+        CategorySchema(
+            id=4,
+            name="Книги",
+            slug="books",
+            description="Книги различных жанров",
+            parent_id=None,
+            is_active=True,
+            created_at=datetime.utcnow()
+        ),
+        CategorySchema(
+            id=5,
+            name="Спорт и отдых",
+            slug="sports",
+            description="Товары для спорта и отдыха",
+            parent_id=None,
+            is_active=True,
+            created_at=datetime.utcnow()
+        ),
+        CategorySchema(
+            id=6,
+            name="Красота и здоровье",
+            slug="beauty",
+            description="Косметика и товары для здоровья",
             parent_id=None,
             is_active=True,
             created_at=datetime.utcnow()
