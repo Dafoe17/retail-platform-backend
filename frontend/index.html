@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Platform - Каталог товаров</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="/" class="navbar-brand">
+                🛒 Retail Platform
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="/" class="nav-link active">Каталог</a></li>
+                <li><a href="cart.html" class="nav-link" id="nav-cart">
+                    Корзина <span class="badge" id="cart-badge">0</span>
+                </a></li>
+                <li id="nav-auth"><a href="auth.html" class="nav-link">Войти</a></li>
+                <li id="nav-user" style="display: none;">
+                    <a href="orders.html" class="nav-link">Заказы</a>
+                </li>
+                <li id="nav-profile" style="display: none;">
+                    <a href="profile.html" class="nav-link" id="user-name">Профиль</a>
+                </li>
+                <li id="nav-logout" style="display: none;">
+                    <button class="btn btn-sm btn-secondary" onclick="app.logout()">Выйти</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="container mt-5">
+        <!-- Заголовок и фильтры -->
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Каталог товаров</h1>
+                <div class="d-flex gap-3 align-items-center">
+                    <input type="text" id="search-input" class="form-control" placeholder="Поиск товаров..." style="min-width: 250px;">
+                </div>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Категория</label>
+                    <select id="category-filter" class="form-control">
+                        <option value="">Все категории</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Сортировка</label>
+                    <select id="sort-filter" class="form-control">
+                        <option value="created">По новизне</option>
+                        <option value="name">По названию</option>
+                        <option value="price_asc">Цена: по возрастанию</option>
+                        <option value="price_desc">Цена: по убыванию</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Наличие</label>
+                    <select id="stock-filter" class="form-control">
+                        <option value="">Все товары</option>
+                        <option value="true">В наличии</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Цена от</label>
+                    <input type="number" id="price-min" class="form-control" placeholder="0" min="0">
+                </div>
+                <div class="filter-group">
+                    <label>Цена до</label>
+                    <input type="number" id="price-max" class="form-control" placeholder="10000" min="0">
+                </div>
+                <div class="filter-group" style="justify-content: flex-end;">
+                    <button class="btn btn-primary" onclick="app.applyFilters()">Применить</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Список товаров -->
+        <section>
+            <div id="products-loading" class="text-center" style="display: none;">
+                <div class="spinner" style="width: 40px; height: 40px;"></div>
+                <p class="mt-3 text-muted">Загрузка товаров...</p>
+            </div>
+
+            <div id="products-error" class="alert alert-danger" style="display: none;"></div>
+
+            <div id="products-empty" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">🔍</div>
+                <h3 class="empty-state-title">Товары не найдены</h3>
+                <p class="empty-state-text">Попробуйте изменить параметры фильтрации</p>
+            </div>
+
+            <div id="products-grid" class="grid grid-cols-4"></div>
+
+            <!-- Пагинация -->
+            <div id="pagination" class="pagination" style="display: none;"></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5" style="background-color: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 40px 0;">
+        <div class="container text-center">
+            <p class="text-muted">© 2025 Retail Platform. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <!-- Toast контейнер -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Логика главной страницы
+        const app = {
+            state: {
+                products: [],
+                categories: [],
+                currentPage: 1,
+                totalPages: 1,
+                filters: {
+                    category_id: '',
+                    min_price: '',
+                    max_price: '',
+                    in_stock: '',
+                    search: '',
+                    sort_by: 'created',
+                    page: 1,
+                    page_size: 12
+                }
+            },
+
+            async init() {
+                this.checkAuth();
+                await this.loadCategories();
+                await this.loadProducts();
+                this.setupEventListeners();
+            },
+
+            checkAuth() {
+                const user = JSON.parse(localStorage.getItem('user') || 'null');
+                if (user) {
+                    document.getElementById('nav-auth').style.display = 'none';
+                    document.getElementById('nav-user').style.display = 'block';
+                    document.getElementById('nav-profile').style.display = 'block';
+                    document.getElementById('nav-logout').style.display = 'block';
+                    document.getElementById('user-name').textContent =
+                        user.profile?.first_name || user.email?.split('@')[0] || 'Профиль';
+                }
+            },
+
+            logout() {
+                if (confirm('Вы действительно хотите выйти?')) {
+                    api.logoutApi();
+                }
+            },
+
+            async loadCategories() {
+                try {
+                    const response = await api.getCategories();
+                    this.state.categories = response;
+                    const select = document.getElementById('category-filter');
+                    response.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.id;
+                        option.textContent = cat.name;
+                        select.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('Failed to load categories:', error);
+                }
+            },
+
+            async loadProducts() {
+                const loading = document.getElementById('products-loading');
+                const grid = document.getElementById('products-grid');
+                const empty = document.getElementById('products-empty');
+                const error = document.getElementById('products-error');
+
+                loading.style.display = 'block';
+                grid.style.display = 'none';
+                empty.style.display = 'none';
+                error.style.display = 'none';
+
+                try {
+                    // Собираем параметры только если они имеют значения
+                    const params = {};
+                    if (this.state.filters.category_id) params.category_id = this.state.filters.category_id;
+                    if (this.state.filters.in_stock) params.in_stock = this.state.filters.in_stock;
+                    if (this.state.filters.min_price) params.min_price = this.state.filters.min_price;
+                    if (this.state.filters.max_price) params.max_price = this.state.filters.max_price;
+                    if (this.state.filters.search) params.search = this.state.filters.search;
+                    if (this.state.filters.sort_by) params.sort_by = this.state.filters.sort_by;
+                    params.page = this.state.filters.page;
+                    params.page_size = this.state.filters.page_size;
+
+                    const response = await api.getProducts(params);
+                    this.state.products = response.items || [];
+                    this.state.totalPages = response.total_pages || 1;
+                    this.state.currentPage = response.page || 1;
+
+                    loading.style.display = 'none';
+
+                    if (this.state.products.length === 0) {
+                        empty.style.display = 'block';
+                    } else {
+                        grid.style.display = 'grid';
+                        this.renderProducts();
+                        this.renderPagination();
+                    }
+                } catch (error) {
+                    loading.style.display = 'none';
+                    error.style.display = 'block';
+                    error.textContent = error.message || 'Ошибка загрузки товаров';
+                }
+            },
+
+            renderProducts() {
+                const grid = document.getElementById('products-grid');
+                grid.innerHTML = this.state.products.map(product => {
+                    // Парсинг images из JSON строки если нужно
+                    let images = [];
+                    try {
+                        if (product.images) {
+                            images = typeof product.images === 'string'
+                                ? JSON.parse(product.images)
+                                : (Array.isArray(product.images) ? product.images : []);
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse images:', e);
+                        images = [];
+                    }
+
+                    const image = (images && images[0]) ? images[0] : 'https://via.placeholder.com/300x200?text=No+Image';
+                    const price = (product.price / 100).toLocaleString('ru-RU', { minimumFractionDigits: 2 });
+                    const stockText = product.stock > 0
+                        ? `В наличии: ${product.stock} шт.`
+                        : 'Нет в наличии';
+
+                    return `
+                        <div class="card product-card">
+                            <img src="${image}" alt="${product.name}" class="product-image">
+                            <div class="product-content">
+                                <a href="#" class="product-title">${this.escapeHtml(product.name)}</a>
+                                <p class="product-description">${this.escapeHtml(product.description || '')}</p>
+                                <div class="product-price">${price} ₽</div>
+                                <div class="product-meta">
+                                    <span class="product-stock">${stockText}</span>
+                                    <button class="btn btn-sm btn-primary"
+                                            onclick="app.addToCart(${product.id})"
+                                            ${!product.is_available || product.stock === 0 ? 'disabled' : ''}>
+                                        🛒 В корзину
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            renderPagination() {
+                const pagination = document.getElementById('pagination');
+                if (this.state.totalPages <= 1) {
+                    pagination.style.display = 'none';
+                    return;
+                }
+
+                pagination.style.display = 'flex';
+                let html = '';
+
+                // Кнопка "Назад"
+                html += `<a href="#" class="pagination-item" ${this.state.currentPage === 1 ? 'disabled' : ''}
+                         onclick="event.preventDefault(); app.goToPage(${this.state.currentPage - 1})">‹</a>`;
+
+                // Страницы
+                for (let i = 1; i <= this.state.totalPages; i++) {
+                    if (i === 1 || i === this.state.totalPages || (i >= this.state.currentPage - 2 && i <= this.state.currentPage + 2)) {
+                        html += `<a href="#" class="pagination-item ${i === this.state.currentPage ? 'active' : ''}"
+                                 onclick="event.preventDefault(); app.goToPage(${i})">${i}</a>`;
+                    } else if (i === this.state.currentPage - 3 || i === this.state.currentPage + 3) {
+                        html += `<span class="pagination-item" style="border:none; background:none;">...</span>`;
+                    }
+                }
+
+                // Кнопка "Вперед"
+                html += `<a href="#" class="pagination-item" ${this.state.currentPage === this.state.totalPages ? 'disabled' : ''}
+                         onclick="event.preventDefault(); app.goToPage(${this.state.currentPage + 1})">›</a>`;
+
+                pagination.innerHTML = html;
+            },
+
+            goToPage(page) {
+                if (page < 1 || page > this.state.totalPages || page === this.state.currentPage) return;
+                this.state.filters.page = page;
+                this.loadProducts();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            applyFilters() {
+                this.state.filters = {
+                    ...this.state.filters,
+                    category_id: parseInt(document.getElementById('category-filter').value) || null,
+                    sort_by: document.getElementById('sort-filter').value,
+                    in_stock: document.getElementById('stock-filter').value === 'true' ? true : null,
+                    min_price: parseFloat(document.getElementById('price-min').value) || null,
+                    max_price: parseFloat(document.getElementById('price-max').value) || null,
+                    search: document.getElementById('search-input').value,
+                    page: 1
+                };
+                this.loadProducts();
+            },
+
+            async addToCart(productId) {
+                if (!api.isAuthenticated()) {
+                    this.showToast('Необходимо войти в аккаунт', 'warning');
+                    setTimeout(() => window.location.href = 'auth.html', 1500);
+                    return;
+                }
+
+                try {
+                    await api.addToCart(productId, 1);
+                    this.showToast('Товар добавлен в корзину', 'success');
+                    await this.updateCartBadge();
+                } catch (error) {
+                    this.showToast(error.message || 'Ошибка добавления в корзину', 'error');
+                }
+            },
+
+            async updateCartBadge() {
+                if (!api.isAuthenticated()) return;
+                try {
+                    const cart = await api.getCart();
+                    document.getElementById('cart-badge').textContent = cart.items_count || 0;
+                } catch (error) {
+                    console.error('Failed to update cart badge:', error);
+                }
+            },
+
+            setupEventListeners() {
+                let searchTimeout;
+                document.getElementById('search-input').addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => this.applyFilters(), 500);
+                });
+            },
+
+            showToast(message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.textContent = message;
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            },
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        };
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+            app.updateCartBadge();
+        });
+    </script>
+</body>
+</html>
