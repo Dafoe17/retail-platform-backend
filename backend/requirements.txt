@@ -28,3 +28,6 @@ httpx==0.26.0
 
 # Utilities
 python-dotenv==1.0.0
+
+# Production Server
+gunicorn==21.2.0
