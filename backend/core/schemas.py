@@ -120,7 +120,7 @@ class ProductCreateSchema(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     slug: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
-    price: Decimal = Field(..., gt=0, decimal_places=2)
+    price: Decimal = Field(..., gt=0)
     stock: int = Field(..., ge=0)
     category_id: Optional[int] = None
     images: List[str] = Field(default_factory=list)
@@ -130,7 +130,7 @@ class ProductUpdateSchema(BaseModel):
     """Обновление товара (admin)"""
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
-    price: Optional[Decimal] = Field(None, gt=0, decimal_places=2)
+    price: Optional[Decimal] = Field(None, gt=0)
     stock: Optional[int] = Field(None, ge=0)
     category_id: Optional[int] = None
     images: Optional[List[str]] = None
