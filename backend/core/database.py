@@ -11,8 +11,8 @@ settings = get_settings()
 db_url = settings.DATABASE_URL
 connect_args = {}
 
-# For Supabase: extract params and set connect_args
-if 'supabase' in db_url:
+# For Supabase/Neon: extract params and set connect_args
+if 'supabase' in db_url or 'neon.tech' in db_url:
     # Remove query params from URL (asyncpg doesn't parse them)
     if '?' in db_url:
         base_url, params_str = db_url.split('?', 1)
@@ -28,6 +28,9 @@ if 'supabase' in db_url:
         # Set connect_args for asyncpg
         if params.get('ssl') == 'require':
             connect_args['ssl'] = True
+        if params.get('pgbouncer') == 'true':
+            # For Supabase pooler - use server-side binding
+            connect_args['server_settings'] = {'statement_cache_mode': 'describe'}
 
 # Async engine
 engine = create_async_engine(

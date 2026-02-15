@@ -1,9 +1,9 @@
 services:
-  # Web API Service (PostgreSQL on Supabase)
+  # Web API Service (PostgreSQL on Neon)
   - type: web
     name: retail-platform-api
     env: python
-    region: frankfurt  # Ближе к Supabase
+    region: frankfurt  # Ближе к Neon (EU)
     buildCommand: cd backend && pip install -r requirements.txt
     startCommand: cd backend && uvicorn core.app:app --host 0.0.0.0 --port $PORT
     plan: free
@@ -11,7 +11,7 @@ services:
       - key: PYTHON_VERSION
         value: 3.11
       - key: DATABASE_URL
-        sync: false  # Set manually in Render dashboard
+        sync: false  # Set manually in Render dashboard (use Neon connection string)
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG

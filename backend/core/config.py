@@ -38,6 +38,29 @@ class Settings(BaseSettings):
             # Add required params for Supabase pooler
             v = v + '?ssl=require&pgbouncer=true'
 
+        # For Neon: convert sslmode to ssl and remove unsupported params
+        if 'neon.tech' in v:
+            if '?' in v:
+                base, params_str = v.split('?', 1)
+                params = {}
+                for param in params_str.split('&'):
+                    if '=' in param:
+                        key, value = param.split('=', 1)
+                        params[key] = value
+
+                # Convert sslmode to ssl for asyncpg
+                if 'sslmode' in params:
+                    params['ssl'] = params.pop('sslmode')
+
+                # Remove channel_binding - asyncpg doesn't support it
+                params.pop('channel_binding', None)
+
+                # Rebuild URL
+                if params:
+                    v = base + '?' + '&'.join(f'{k}={val}' for k, val in params.items())
+                else:
+                    v = base
+
         return v
 
     # JWT
