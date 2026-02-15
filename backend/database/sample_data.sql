@@ -23,11 +23,11 @@ INSERT INTO products (name, slug, description, price, stock, category_id, images
 'Смартфон Apple iPhone 15 Pro с дисплеем 6.1 дюйма, камерой 48 Мп и процессором A17 Pro.',
 9999000, 50, 1, '["https://images.unsplash.com/photo-1592750475338-74b7b210f4f7?w=400"]', true, NOW(), NOW()),
 
-'Samsung Galaxy S24 Ultra', 'samsung-galaxy-s24-ultra',
+('Samsung Galaxy S24 Ultra', 'samsung-galaxy-s24-ultra',
 'Флагман Samsung с экраном 6.8 дюйма, камерой 200 Мп и S Pen.',
 8999000, 35, 1, '["https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400"]', true, NOW(), NOW()),
 
-'MacBook Air 13" M3', 'macbook-air-13-m3',
+('MacBook Air 13" M3', 'macbook-air-13-m3',
 'Облегченный ноутбук Apple с процессором M3, 8 ГБ RAM и 256 ГБ SSD.',
 12999000, 20, 1, '["https://images.unsplash.com/photo-1517336714731-489679fd1ca8?w=400"]', true, NOW(), NOW()),
 
@@ -98,24 +98,20 @@ INSERT INTO products (name, slug, description, price, stock, category_id, images
 
 ON CONFLICT (slug) DO NOTHING;
 
--- =================== ТЕСТОВЫЕ ПОЛЬЗОВАТЕЛИ ===================
--- Раскомментируйте для создания тестовых пользователей (пароль: password123)
+INSERT INTO users (email, password_hash, role, is_active, is_verified, created_at) VALUES
+('test@example.com', '$2b$12$LQv3c1yqBWVHxmd0VHW1O9qWBz.HfWKR.k', 'customer', true, true, NOW()),
+('admin@example.com', '$2b$12$LQv3c1yqBWVHxmd0VHW1O9qWBz.HfWKR.k', 'admin', true, true, NOW())
+ON CONFLICT (email) DO NOTHING;
 
--- INSERT INTO users (email, password_hash, role, is_active, is_verified, created_at) VALUES
--- ('test@example.com', '$2b$12$LQv3c1yqBWVHxmd0VHW1O9qWBz.HfWKR.k', 'customer', true, true, NOW()),
--- ('admin@example.com', '$2b$12$LQv3c1yqBWVHxmd0VHW1O9qWBz.HfWKR.k', 'admin', true, true, NOW());
+INSERT INTO user_profiles (user_id, first_name, last_name, phone) VALUES
+(1, 'Иван', 'Иванов', '+79991234567'),
+(2, 'Администратор', 'Системы', '+799976543210')
+ON CONFLICT (user_id) DO NOTHING;
 
--- INSERT INTO user_profiles (user_id, first_name, last_name, phone) VALUES
--- (1, 'Иван', 'Иванов', '+79991234567'),
--- (2, 'Администратор', 'Системы', '+799976543210');
-
--- =================== ЗАКАЗЫ ДЛЯ ТЕСТИРОВАНИЯ ===================
--- Раскомментируйте для создания тестовых заказов
-
--- Сначала получите реальные user_id и product_id из базы:
--- INSERT INTO orders (order_number, user_id, status, subtotal, shipping_cost, discount, tax, total,
---     recipient_name, phone, country, city, street, building, apartment, postal_code, created_at, updated_at)
--- VALUES
--- ('ORD-001-TEST', 1, 'delivered', 999900, 0, 0, 0, 999900,
---  'Иван Иванов', '+79991234567', 'Россия', 'Москва', 'Тверская', '1', '10', '125009',
---  NOW(), NOW());
+INSERT INTO orders (order_number, user_id, status, subtotal, shipping_cost, discount, tax, total,
+    recipient_name, phone, country, city, street, building, apartment, postal_code, created_at, updated_at)
+VALUES
+('ORD-001-TEST', 1, 'delivered', 999900, 0, 0, 0, 999900,
+ 'Иван Иванов', '+79991234567', 'Россия', 'Москва', 'Тверская', '1', '10', '125009',
+ NOW(), NOW())
+ON CONFLICT (order_number) DO NOTHING;
