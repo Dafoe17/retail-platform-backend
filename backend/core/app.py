@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 from .config import get_settings
 from .schemas import SuccessResponse
+from .database import engine, Base
 
 settings = get_settings()
 
@@ -14,8 +15,13 @@ async def lifespan(app: FastAPI):
     """Application lifecycle events"""
     # Startup
     print(f"{settings.APP_NAME} v{settings.APP_VERSION} starting...")
-    print(f"Database: {settings.DATABASE_URL}")
+    print(f"Database: {settings.DATABASE_URL.split('@')[-1] if '@' in settings.DATABASE_URL else settings.DATABASE_URL}")
     print(f"JWT expire: {settings.ACCESS_TOKEN_EXPIRE_MINUTES}min")
+
+    # Create tables
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("Database tables created/verified")
 
     yield
 

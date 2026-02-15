@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Platform - Интернет-магазин</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+
+    <style>
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            padding: 80px 0;
+            text-align: center;
+            color: white;
+            border-radius: 0 0 40px 40px;
+            margin-bottom: 50px;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero .btn-primary {
+            background: white;
+            color: var(--bg-gradient-start);
+        }
+
+        .hero .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero .btn-outline {
+            border-color: white;
+            color: white;
+        }
+
+        .hero .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Featured Products */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .view-all {
+            color: var(--color-primary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .view-all:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero {
+                padding: 50px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" style="position: relative;">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">🛒</span>
+                    <span>Retail</span>
+                </a>
+
+                <nav class="nav">
+                    <a href="products.html" class="nav-link">Каталог</a>
+                    <a href="orders.html" class="nav-link">Заказы</a>
+                </nav>
+
+                <div class="header-search">
+                    <input type="text" class="search-input" placeholder="Поиск товаров...">
+                </div>
+
+                <div class="user-menu">
+                    <a href="cart.html" class="cart-link" title="Корзина">
+                        <span class="cart-icon">🛒</span>
+                        <span class="cart-badge" style="display: none;">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">Добро пожаловать в Retail Platform</h1>
+            <p class="hero-subtitle">
+                Современный интернет-магазин с широким ассортиментом товаров,
+                быстрым оформлением заказов и удобной доставкой
+            </p>
+            <div class="hero-actions">
+                <a href="products.html" class="btn btn-primary btn-lg">
+                    Перейти в каталог
+                </a>
+                <a href="register.html" class="btn btn-outline btn-lg">
+                    Регистрация
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Features -->
+            <section class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Быстрая доставка</h3>
+                    <p class="feature-description">
+                        Доставляем заказы по всей России в кратчайшие сроки
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h3 class="feature-title">Качественные товары</h3>
+                    <p class="feature-description">
+                        Только оригинальная продукция от проверенных поставщиков
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Безопасные платежи</h3>
+                    <p class="feature-description">
+                        Все транзакции защищены современными технологиями
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3 class="feature-title">Поддержка 24/7</h3>
+                    <p class="feature-description">
+                        Всегда на связи и готовы помочь с любыми вопросами
+                    </p>
+                </div>
+            </section>
+
+            <!-- Featured Products -->
+            <section class="featured-products">
+                <div class="section-header">
+                    <h2 class="section-title">Популярные товары</h2>
+                    <a href="products.html" class="view-all">
+                        Смотреть все →
+                    </a>
+                </div>
+                <div class="products-grid" id="featured-products">
+                    <!-- Products will be loaded by JS -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Retail Platform</h4>
+                    <p style="color: var(--text-muted); margin-top: 10px;">
+                        Современный интернет-магазин с удобным интерфейсом и быстрым оформлением заказов.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Покупателям</h4>
+                    <ul class="footer-links">
+                        <li><a href="products.html">Каталог</a></li>
+                        <li><a href="orders.html">Мои заказы</a></li>
+                        <li><a href="cart.html">Корзина</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Аккаунт</h4>
+                    <ul class="footer-links">
+                        <li><a href="login.html">Войти</a></li>
+                        <li><a href="register.html">Регистрация</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Retail Platform. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/theme.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize auth
+            await Auth.init();
+
+            // Update UI
+            UI.updateUserMenu();
+            UI.updateCartBadge();
+
+            // Load featured products
+            await loadFeaturedProducts();
+        });
+
+        async function loadFeaturedProducts() {
+            const container = document.getElementById('featured-products');
+            if (!container) return;
+
+            try {
+                const response = await APIService.products.list({
+                    page: 1,
+                    page_size: 4,
+                    in_stock: true
+                });
+
+                if (response.items && response.items.length > 0) {
+                    container.innerHTML = response.items.map(product => {
+                        const imageUrl = product.images && product.images.length > 0
+                            ? product.images[0]
+                            : 'https://via.placeholder.com/300x300?text=No+Image';
+
+                        return `
+                            <div class="product-card" data-product-id="${product.id}">
+                                <div class="product-image">
+                                    <img src="${Utils.escapeHtml(imageUrl)}" alt="${Utils.escapeHtml(product.name)}" loading="lazy">
+                                </div>
+                                <div class="product-info">
+                                    <h3 class="product-name">
+                                        <a href="products.html">${Utils.escapeHtml(product.name)}</a>
+                                    </h3>
+                                    ${product.description ? `<p class="product-description">${Utils.escapeHtml(Utils.truncate(product.description, 80))}</p>` : ''}
+                                    <div class="product-footer">
+                                        <span class="product-price">${Utils.formatPrice(product.price)}</span>
+                                        <a href="products.html" class="btn btn-primary btn-sm">Подробнее</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>Товары временно недоступны</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Failed to load featured products:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>Не удалось загрузить товары</p>
+                        <a href="products.html" class="btn btn-primary">Перейти в каталог</a>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

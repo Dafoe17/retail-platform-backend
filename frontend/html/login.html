@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Retail Platform</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">🛒</div>
+                <h1 class="auth-title">Добро пожаловать</h1>
+                <p class="auth-subtitle">Войдите в свой аккаунт</p>
+            </div>
+
+            <form id="login-form" onsubmit="handleLoginForm(event)">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email"
+                           placeholder="example@mail.com" required
+                           autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password"
+                           placeholder="Введите пароль" required
+                           autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    Войти
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Нет аккаунта? <a href="register.html">Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/theme.js"></script>
+
+    <script>
+        // Redirect if already authenticated
+        document.addEventListener('DOMContentLoaded', () => {
+            Auth.redirectIfAuthenticated('products.html');
+        });
+    </script>
+</body>
+</html>

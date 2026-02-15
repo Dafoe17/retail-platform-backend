@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - Retail Platform</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">🛒</div>
+                <h1 class="auth-title">Создать аккаунт</h1>
+                <p class="auth-subtitle">Зарегистрируйтесь для покупок</p>
+            </div>
+
+            <form id="register-form" onsubmit="handleRegisterForm(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="first_name">Имя</label>
+                        <input type="text" id="first_name" name="first_name"
+                               placeholder="Иван" autocomplete="given-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="last_name">Фамилия</label>
+                        <input type="text" id="last_name" name="last_name"
+                               placeholder="Иванов" autocomplete="family-name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email"
+                           placeholder="example@mail.com" required
+                           autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль *</label>
+                    <input type="password" id="password" name="password"
+                           placeholder="Минимум 8 символов" required
+                           autocomplete="new-password" minlength="8">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Подтвердите пароль *</label>
+                    <input type="password" id="confirm_password" name="confirm_password"
+                           placeholder="Повторите пароль" required
+                           autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    Зарегистрироваться
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Уже есть аккаунт? <a href="login.html">Войти</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/theme.js"></script>
+
+    <script>
+        // Redirect if already authenticated
+        document.addEventListener('DOMContentLoaded', () => {
+            Auth.redirectIfAuthenticated('products.html');
+        });
+    </script>
+</body>
+</html>

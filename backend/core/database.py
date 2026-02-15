@@ -1,4 +1,5 @@
 """Подключение к базе данных"""
+import ssl
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from typing import AsyncGenerator
@@ -7,11 +8,21 @@ from .config import get_settings
 
 settings = get_settings()
 
+# Determine if SSL is needed
+connect_args = {}
+if 'ssl=require' in settings.DATABASE_URL or 'supabase' in settings.DATABASE_URL:
+    # Remove ssl param from URL (asyncpg doesn't parse it from URL)
+    db_url = settings.DATABASE_URL.replace('?ssl=require', '').replace('&ssl=require', '')
+    connect_args['ssl'] = True
+else:
+    db_url = settings.DATABASE_URL
+
 # Async engine
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     echo=settings.DEBUG,
     future=True,
+    connect_args=connect_args,
 )
 
 # Async session maker

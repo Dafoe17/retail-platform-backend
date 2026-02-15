@@ -1,6 +1,20 @@
 services:
+  # Web API Service (PostgreSQL on Supabase)
   - type: web
     name: retail-platform-api
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn core.app:app --host 0.0.0.0 --port $PORT
+    region: frankfurt  # Ближе к Supabase
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn core.app:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: DATABASE_URL
+        sync: false  # Set manually in Render dashboard
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: CORS_ORIGINS
+        value: "*"

@@ -16,6 +16,26 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "postgresql+asyncpg://retail_user:retail_password@localhost:5433/retail_shop"
 
+    @field_validator('DATABASE_URL', mode='before')
+    @classmethod
+    def convert_database_url(cls, v: str) -> str:
+        """Convert postgresql:// to postgresql+asyncpg:// for asyncpg driver"""
+        if not v:
+            return v
+
+        # Convert to asyncpg format
+        if v.startswith('postgresql://') and '+asyncpg' not in v:
+            v = v.replace('postgresql://', 'postgresql+asyncpg://', 1)
+
+        # Add SSL for external databases (Supabase, etc.)
+        if 'supabase' in v or 'render.com' in v:
+            if '?' not in v:
+                v = v + '?ssl=require'
+            elif 'ssl' not in v:
+                v = v + '&ssl=require'
+
+        return v
+
     # JWT
     SECRET_KEY: str = "your-secret-key-change-in-production"
     ALGORITHM: str = "HS256"

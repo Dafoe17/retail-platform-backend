@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои заказы - Retail Platform</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">🛒</span>
+                    <span>Retail</span>
+                </a>
+
+                <nav class="nav">
+                    <a href="products.html" class="nav-link">Каталог</a>
+                    <a href="orders.html" class="nav-link active">Заказы</a>
+                </nav>
+
+                <div class="header-search">
+                    <input type="text" class="search-input" placeholder="Поиск товаров...">
+                </div>
+
+                <div class="user-menu">
+                    <a href="cart.html" class="cart-link" title="Корзина">
+                        <span class="cart-icon">🛒</span>
+                        <span class="cart-badge" style="display: none;">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Мои заказы</h1>
+                <p class="page-subtitle">История и статус ваших заказов</p>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label class="filter-label">Статус:</label>
+                    <select id="status-filter" class="search-input" style="width: auto; padding: 8px 12px;">
+                        <option value="">Все заказы</option>
+                        <option value="pending">Ожидает</option>
+                        <option value="confirmed">Подтвержден</option>
+                        <option value="processing">В обработке</option>
+                        <option value="shipped">Отправлен</option>
+                        <option value="delivered">Доставлен</option>
+                        <option value="cancelled">Отменен</option>
+                    </select>
+                </div>
+
+                <div class="filter-group" style="margin-left: auto;">
+                    <a href="products.html" class="btn btn-primary btn-sm">
+                        Новый заказ
+                    </a>
+                </div>
+            </div>
+
+            <!-- Orders List -->
+            <div class="orders-list">
+                <!-- Orders will be loaded by JS -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <!-- Pagination will be rendered by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Retail Platform</h4>
+                    <p style="color: var(--text-muted); margin-top: 10px;">
+                        Современный интернет-магазин с удобным интерфейсом.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Покупателям</h4>
+                    <ul class="footer-links">
+                        <li><a href="products.html">Каталог</a></li>
+                        <li><a href="orders.html">Мои заказы</a></li>
+                        <li><a href="cart.html">Корзина</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Аккаунт</h4>
+                    <ul class="footer-links">
+                        <li><a href="login.html">Войти</a></li>
+                        <li><a href="register.html">Регистрация</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Retail Platform. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/api.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/orders.js"></script>
+    <script src="../js/theme.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check auth
+            if (!Auth.requireAuth('login.html')) {
+                return;
+            }
+
+            // Initialize auth
+            await Auth.init();
+
+            // Update UI
+            UI.updateUserMenu();
+            UI.updateCartBadge();
+
+            // Initialize orders page
+            await Orders.init();
+        });
+    </script>
+</body>
+</html>
