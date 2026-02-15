@@ -6,7 +6,21 @@ from pathlib import Path
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import async_session_maker
+from core.database import async_session_maker, engine, Base
+# Import all models to register them
+from core.models import (  # noqa: F401
+    UserModel, UserProfileModel, RefreshTokenModel,
+    CategoryModel, ProductModel,
+    CartModel, CartItemModel,
+    OrderModel, OrderItemModel, OrderStatusHistoryModel,
+)
+
+
+async def create_tables() -> None:
+    """Create all tables if they don't exist"""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("Tables created/verified")
 
 
 async def run_sql_file(session: AsyncSession, filepath: Path) -> None:
@@ -51,6 +65,9 @@ async def run_sql_file(session: AsyncSession, filepath: Path) -> None:
 
 async def seed_database() -> None:
     """Initialize database with schema and sample data"""
+    # First create tables
+    await create_tables()
+
     db_dir = Path(__file__).parent
 
     async with async_session_maker() as session:
