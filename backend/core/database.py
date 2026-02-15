@@ -1,5 +1,4 @@
 """Подключение к базе данных"""
-import ssl
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from typing import AsyncGenerator
@@ -8,21 +7,35 @@ from .config import get_settings
 
 settings = get_settings()
 
-# Determine if SSL is needed
+# Parse DATABASE_URL and set connect_args
+db_url = settings.DATABASE_URL
 connect_args = {}
-if 'ssl=require' in settings.DATABASE_URL or 'supabase' in settings.DATABASE_URL:
-    # Remove ssl param from URL (asyncpg doesn't parse it from URL)
-    db_url = settings.DATABASE_URL.replace('?ssl=require', '').replace('&ssl=require', '')
-    connect_args['ssl'] = True
-else:
-    db_url = settings.DATABASE_URL
+
+# For Supabase: extract params and set connect_args
+if 'supabase' in db_url:
+    # Remove query params from URL (asyncpg doesn't parse them)
+    if '?' in db_url:
+        base_url, params_str = db_url.split('?', 1)
+        db_url = base_url
+
+        # Parse params
+        params = {}
+        for param in params_str.split('&'):
+            if '=' in param:
+                key, value = param.split('=', 1)
+                params[key] = value
+
+        # Set connect_args for asyncpg
+        if params.get('ssl') == 'require':
+            connect_args['ssl'] = True
 
 # Async engine
 engine = create_async_engine(
     db_url,
     echo=settings.DEBUG,
     future=True,
-    connect_args=connect_args,
+    pool_pre_ping=True,
+    connect_args=connect_args if connect_args else None,
 )
 
 # Async session maker

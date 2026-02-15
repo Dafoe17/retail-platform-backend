@@ -27,12 +27,16 @@ class Settings(BaseSettings):
         if v.startswith('postgresql://') and '+asyncpg' not in v:
             v = v.replace('postgresql://', 'postgresql+asyncpg://', 1)
 
-        # Add SSL for external databases (Supabase, etc.)
-        if 'supabase' in v or 'render.com' in v:
-            if '?' not in v:
-                v = v + '?ssl=require'
-            elif 'ssl' not in v:
-                v = v + '&ssl=require'
+        # For Supabase: use Session Pooler (port 6543) and add required params
+        if 'supabase' in v:
+            # Replace port 5432 with 6543 for Session Pooler
+            v = v.replace(':5432/', ':6543/')
+            # Remove existing query params
+            if '?' in v:
+                base, params = v.split('?', 1)
+                v = base
+            # Add required params for Supabase pooler
+            v = v + '?ssl=require&pgbouncer=true'
 
         return v
 
