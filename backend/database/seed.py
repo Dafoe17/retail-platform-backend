@@ -1,10 +1,9 @@
 """Seed database with initial data"""
 import asyncio
-import os
+import sys
 from pathlib import Path
 
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import async_session_maker, engine, Base
 # Import all models to register them
@@ -18,16 +17,19 @@ from core.models import (  # noqa: F401
 
 async def create_tables() -> None:
     """Create all tables if they don't exist"""
+    print("Creating tables...")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     print("Tables created/verified")
 
 
-async def run_sql_file(session: AsyncSession, filepath: Path) -> None:
+async def run_sql_file(filepath: Path) -> None:
     """Execute SQL file"""
     if not filepath.exists():
         print(f"SQL file not found: {filepath}")
         return
+
+    print(f"Executing: {filepath.name}")
 
     with open(filepath, "r", encoding="utf-8") as f:
         sql_content = f.read()
@@ -37,8 +39,8 @@ async def run_sql_file(session: AsyncSession, filepath: Path) -> None:
     current_statement = []
 
     for line in sql_content.split("\n"):
-        # Skip comments
         stripped = line.strip()
+        # Skip comments
         if stripped.startswith("--"):
             continue
 
@@ -51,37 +53,42 @@ async def run_sql_file(session: AsyncSession, filepath: Path) -> None:
                 statements.append(stmt)
             current_statement = []
 
-    # Execute statements
-    for stmt in statements:
-        try:
-            await session.execute(text(stmt))
-        except Exception as e:
-            # Log but continue (some statements may fail if already exist)
-            print(f"Warning: {str(e)[:100]}")
+    print(f"Found {len(statements)} statements")
 
-    await session.commit()
-    print(f"Executed: {filepath.name}")
+    async with async_session_maker() as session:
+        success = 0
+        errors = 0
+        for i, stmt in enumerate(statements, 1):
+            try:
+                await session.execute(text(stmt))
+                success += 1
+            except Exception as e:
+                errors += 1
+                # Show first 200 chars of error
+                print(f"Error in statement {i}: {str(e)[:200]}")
+
+        await session.commit()
+        print(f"Executed: {success} success, {errors} errors")
 
 
 async def seed_database() -> None:
     """Initialize database with schema and sample data"""
-    # First create tables
-    await create_tables()
+    try:
+        # First create tables
+        await create_tables()
 
-    db_dir = Path(__file__).parent
+        db_dir = Path(__file__).parent
 
-    async with async_session_maker() as session:
-        # Run init.sql (schema + basic sample data)
-        init_sql = db_dir / "init.sql"
-        if init_sql.exists():
-            await run_sql_file(session, init_sql)
-
-        # Run sample_data.sql (more test data)
+        # Run sample_data.sql only (init.sql conflicts with SQLAlchemy models)
         sample_sql = db_dir / "sample_data.sql"
-        if sample_sql.exists():
-            await run_sql_file(session, sample_sql)
+        await run_sql_file(sample_sql)
 
-    print("Database seeded successfully!")
+        print("Database seeded successfully!")
+    except Exception as e:
+        print(f"Seed error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
 
 if __name__ == "__main__":
