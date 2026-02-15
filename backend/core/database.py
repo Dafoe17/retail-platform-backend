@@ -33,13 +33,15 @@ if 'supabase' in db_url or 'neon.tech' in db_url:
             connect_args['server_settings'] = {'statement_cache_mode': 'describe'}
 
 # Async engine
-engine = create_async_engine(
-    db_url,
-    echo=settings.DEBUG,
-    future=True,
-    pool_pre_ping=True,
-    connect_args=connect_args if connect_args else None,
-)
+engine_kwargs = {
+    "echo": settings.DEBUG,
+    "future": True,
+    "pool_pre_ping": True,
+}
+if connect_args:
+    engine_kwargs["connect_args"] = connect_args
+
+engine = create_async_engine(db_url, **engine_kwargs)
 
 # Async session maker
 async_session_maker = async_sessionmaker(
